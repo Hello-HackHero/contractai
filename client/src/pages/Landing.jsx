@@ -1,6 +1,26 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Shield, Zap, FileSearch, ArrowRight, Check, Star } from 'lucide-react'
+import { Shield, Zap, FileSearch, ArrowRight, Check, Star, Twitter, Github, Quote, Code2 } from 'lucide-react'
+
+// Instagram SVG icon
+function InstagramIcon({ className }) {
+    return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+        </svg>
+    )
+}
+
+const techStack = [
+    { name: 'React + Vite', color: 'from-cyan-500 to-blue-500', icon: '⚛️' },
+    { name: 'Supabase', color: 'from-emerald-500 to-green-500', icon: '🗄️' },
+    { name: 'Groq AI - LLaMA 3.3 70B', color: 'from-orange-500 to-red-500', icon: '🤖' },
+    { name: 'Tailwind CSS', color: 'from-sky-500 to-indigo-500', icon: '🎨' },
+    { name: 'Vercel', color: 'from-gray-700 to-gray-900', icon: '▲' },
+    { name: 'Stripe', color: 'from-purple-500 to-indigo-600', icon: '💳' },
+]
 import GlassCard from '../components/GlassCard'
 
 const fadeUp = {
@@ -257,6 +277,131 @@ export default function Landing() {
                             </motion.div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* Technologies Used Section */}
+            <section className="py-24 px-4 bg-gray-50/50 dark:bg-dark-card/50">
+                <div className="max-w-6xl mx-auto">
+                    <motion.div
+                        className="text-center mb-16"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeUp}
+                        custom={0}
+                    >
+                        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-sm font-medium mb-4">
+                            <Code2 className="w-4 h-4" />
+                            Our Stack
+                        </span>
+                        <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                            Technologies <span className="gradient-text">We Use</span>
+                        </h2>
+                        <p className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+                            Built with cutting-edge tools for reliability, speed, and intelligence.
+                        </p>
+                    </motion.div>
+
+                    <div className="flex flex-wrap justify-center gap-4">
+                        {techStack.map((tech, i) => (
+                            <motion.div
+                                key={tech.name}
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true }}
+                                variants={fadeUp}
+                                custom={i * 0.5}
+                                className={`group relative inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-gradient-to-r ${tech.color} text-white font-semibold text-sm shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-default`}
+                            >
+                                <span className="text-lg">{tech.icon}</span>
+                                {tech.name}
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Meet the Developer Section */}
+            <section className="py-24 px-4">
+                <div className="max-w-4xl mx-auto">
+                    <motion.div
+                        className="text-center mb-12"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeUp}
+                        custom={0}
+                    >
+                        <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+                            Meet the <span className="gradient-text">Developer</span>
+                        </h2>
+                    </motion.div>
+
+                    <motion.div
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeUp}
+                        custom={1}
+                    >
+                        <GlassCard className="p-8 sm:p-10 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-primary-500/10 to-transparent rounded-bl-full" />
+                            <div className="relative">
+                                <div className="flex flex-col sm:flex-row items-start gap-6">
+                                    {/* Developer avatar placeholder */}
+                                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-600 to-purple-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg flex-shrink-0">
+                                        SM
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                                            Siddhartha Mishra
+                                        </h3>
+                                        <p className="text-primary-600 dark:text-primary-400 font-medium mb-4">
+                                            BTech IT Student | AI & SaaS Developer
+                                        </p>
+                                        <div className="relative pl-5 border-l-2 border-primary-500/30 mb-6">
+                                            <Quote className="w-5 h-5 text-primary-500/40 absolute -left-3 -top-1 bg-white dark:bg-dark-bg rounded" />
+                                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed italic">
+                                                "I built ContractAI to make legal contracts accessible and
+                                                understandable for everyone. No more confusing legal jargon —
+                                                just clear, AI-powered insights."
+                                            </p>
+                                        </div>
+                                        <div className="flex flex-wrap gap-3">
+                                            <a
+                                                href="https://www.instagram.com/sidd.hartha_/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-rose-500 text-white text-sm font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
+                                            >
+                                                <InstagramIcon className="w-4 h-4" />
+                                                @sidd.hartha_
+                                            </a>
+                                            <a
+                                                href="https://x.com/Tusharlenk82842"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-500 text-white text-sm font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
+                                            >
+                                                <Twitter className="w-4 h-4" />
+                                                X (Twitter)
+                                            </a>
+                                            <a
+                                                href="https://github.com/Hello-HackHero/contractai"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-gray-700 to-gray-900 text-white text-sm font-medium hover:shadow-lg hover:scale-105 transition-all duration-300"
+                                            >
+                                                <Github className="w-4 h-4" />
+                                                GitHub
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </GlassCard>
+                    </motion.div>
                 </div>
             </section>
 
