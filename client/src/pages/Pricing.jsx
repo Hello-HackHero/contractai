@@ -1,317 +1,221 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { supabase } from '../lib/supabase'
-import { Check, Zap, Star, X, Shield, Download, Infinity } from 'lucide-react'
-import GlassCard from '../components/GlassCard'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { Check, Lock, Shield, BarChart3 } from 'lucide-react'
 
 const fadeUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
+    hidden: { opacity: 0, y: 30 },
+    visible: (i) => ({
+        opacity: 1,
+        y: 0,
+        transition: { delay: i * 0.15, duration: 0.6, ease: 'easeOut' },
+    }),
 }
 
 const plans = [
     {
-        name: 'Free',
+        name: 'Starter',
+        description: 'Perfect for individuals',
         price: '₹0',
         period: '/forever',
-        description: 'For individuals trying it out',
         features: [
-            '2 contract analyses per month',
-            'Risk score overview',
-            'Summary preview',
+            '3 contracts per month',
+            'Basic risk score',
+            'PDF support only',
             'Email support',
         ],
-        limitations: [
-            'No full risk report',
-            'No PDF download',
-            'No safer alternatives',
-        ],
+        cta: 'Get Started Free',
         featured: false,
     },
     {
-        name: 'Pro',
-        price: '₹299',
+        name: 'Professional',
+        description: 'For freelancers & small teams',
+        price: '₹499',
         period: '/month',
-        description: 'For professionals and small teams',
         features: [
-            'Unlimited contract analyses',
-            'Complete risk reports',
-            'Safer clause alternatives',
-            'Downloadable PDF reports',
-            'Priority email support',
-            'All future features included',
+            '25 contracts per month',
+            'Full risk scoring',
+            'PDF + DOCX support',
+            'Chat with contract',
+            'Download reports',
+            'Priority support',
         ],
-        limitations: [],
+        cta: 'Get Started — ₹499/mo',
         featured: true,
+    },
+    {
+        name: 'Enterprise',
+        description: 'For law firms & large teams',
+        price: 'Custom',
+        period: '',
+        features: [
+            'Unlimited contracts',
+            'Custom AI model',
+            'API access',
+            'Team collaboration',
+            'Dedicated support',
+            'SLA guarantee',
+        ],
+        cta: 'Contact Sales',
+        featured: false,
     },
 ]
 
-const proFeatures = [
-    { icon: <Infinity className="w-4 h-4" />, text: 'Unlimited contract analyses' },
-    { icon: <Shield className="w-4 h-4" />, text: 'Full risk reports & clause details' },
-    { icon: <Check className="w-4 h-4" />, text: 'Safer clause alternatives' },
-    { icon: <Download className="w-4 h-4" />, text: 'Downloadable PDF reports' },
-]
-
 export default function Pricing() {
-    const { user, profile, refreshProfile } = useAuth()
     const navigate = useNavigate()
-    const [showModal, setShowModal] = useState(false)
-    const [paying, setPaying] = useState(false)
-    const [success, setSuccess] = useState(false)
-
-    const isPro = profile?.subscription === 'pro'
-
-    const handleUpgradeClick = () => {
-        if (!user) {
-            navigate('/signup')
-            return
-        }
-        setShowModal(true)
-        setSuccess(false)
-    }
-
-    const handleConfirmPayment = async () => {
-        setPaying(true)
-        // Simulate payment processing delay
-        await new Promise(res => setTimeout(res, 2000))
-
-        try {
-            await supabase
-                .from('profiles')
-                .update({ subscription: 'pro' })
-                .eq('id', user.id)
-
-            await refreshProfile()
-            setSuccess(true)
-
-            // Redirect to dashboard after showing success
-            setTimeout(() => {
-                setShowModal(false)
-                navigate('/dashboard')
-            }, 2000)
-        } catch (err) {
-            console.error('Payment error:', err)
-        }
-        setPaying(false)
-    }
-
     return (
-        <div className="page-container">
-            <div className="fixed inset-0 bg-gradient-to-br from-primary-50 via-white to-purple-50 dark:from-dark-bg dark:via-dark-bg dark:to-purple-950/20 -z-10" />
+        <div className="min-h-screen">
+            {/* Hero */}
+            <section className="relative pt-32 pb-20 px-4 bg-gradient-to-br from-[#0D2A3E] via-[#112E44] to-[#163D59]">
+                <div className="max-w-5xl mx-auto text-center">
+                    <motion.h1
+                        className="text-4xl sm:text-5xl font-extrabold text-white mb-4"
+                        initial="hidden"
+                        animate="visible"
+                        variants={fadeUp}
+                        custom={0}
+                    >
+                        Simple, <span className="text-[#C9A843]">Transparent Pricing</span>
+                    </motion.h1>
+                    <motion.p
+                        className="text-lg text-gray-300"
+                        initial="hidden"
+                        animate="visible"
+                        variants={fadeUp}
+                        custom={1}
+                    >
+                        No hidden fees. No surprises. Cancel anytime.
+                    </motion.p>
+                </div>
+            </section>
 
-            <div className="max-w-5xl mx-auto">
-                <motion.div
-                    className="text-center mb-16"
-                    initial="hidden"
-                    animate="visible"
-                    variants={fadeUp}
-                    custom={0}
-                >
-                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400 text-sm font-medium mb-4">
-                        <Star className="w-4 h-4" /> Simple Pricing
-                    </span>
-                    <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                        Choose Your <span className="gradient-text">Plan</span>
-                    </h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-lg max-w-xl mx-auto">
-                        Start with free analyses and upgrade when you need the full picture.
-                    </p>
-                </motion.div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-                    {plans.map((plan, i) => (
-                        <motion.div
-                            key={plan.name}
-                            initial="hidden"
-                            animate="visible"
-                            variants={fadeUp}
-                            custom={i + 1}
-                        >
-                            <GlassCard className={`h-full relative ${plan.featured ? 'border-primary-500/50 dark:border-primary-500/30 shadow-primary-500/10 shadow-2xl' : ''}`}>
+            {/* Pricing Cards */}
+            <section className="py-20 px-4 bg-[#F4F6F9] dark:bg-[#091F2E]">
+                <div className="max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {plans.map((plan, i) => (
+                            <motion.div
+                                key={plan.name}
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true }}
+                                variants={fadeUp}
+                                custom={i + 1}
+                                className={`relative bg-white dark:bg-[#0B2236] border rounded-2xl p-8 flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
+                                    plan.featured
+                                        ? 'border-[#C9A843] shadow-lg shadow-[#C9A843]/10 scale-[1.02]'
+                                        : 'border-gray-200 dark:border-white/10'
+                                }`}
+                            >
                                 {plan.featured && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-primary-600 to-purple-600 text-white text-xs font-bold rounded-full shadow-lg">
-                                        RECOMMENDED
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#C9A843] text-[#0D2A3E] text-xs font-bold rounded-full uppercase tracking-wide">
+                                        Most Popular
                                     </div>
                                 )}
-
                                 <div className="mb-6">
-                                    <div className="flex items-center gap-2 mb-1">
-                                        {plan.featured && <Zap className="w-5 h-5 text-amber-500" />}
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{plan.name}</h3>
-                                    </div>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{plan.description}</p>
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{plan.name}</h3>
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{plan.description}</p>
                                 </div>
-
                                 <div className="flex items-baseline mb-8">
                                     <span className="text-4xl font-bold text-gray-900 dark:text-white">{plan.price}</span>
-                                    <span className="ml-1 text-gray-400">{plan.period}</span>
+                                    {plan.period && <span className="ml-1 text-gray-400">{plan.period}</span>}
                                 </div>
-
-                                <ul className="space-y-3 mb-6">
+                                <ul className="space-y-3 mb-8 flex-1">
                                     {plan.features.map(f => (
-                                        <li key={f} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-300">
-                                            <Check className={`w-4 h-4 flex-shrink-0 mt-0.5 ${plan.featured ? 'text-primary-500' : 'text-success-500'}`} />
+                                        <li key={f} className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300">
+                                            <Check className={`w-4 h-4 flex-shrink-0 ${plan.featured ? 'text-[#C9A843]' : 'text-emerald-500'}`} />
                                             {f}
                                         </li>
                                     ))}
                                 </ul>
-
-                                {plan.limitations.length > 0 && (
-                                    <ul className="space-y-2 mb-8 pt-4 border-t border-gray-100 dark:border-dark-border">
-                                        {plan.limitations.map(l => (
-                                            <li key={l} className="flex items-start gap-3 text-sm text-gray-400">
-                                                <span className="w-4 text-center flex-shrink-0">—</span>
-                                                {l}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-
-                                {plan.featured ? (
-                                    isPro ? (
-                                        <button disabled className="w-full gradient-btn opacity-60 cursor-not-allowed">
-                                            ✓ Current Plan (Pro)
-                                        </button>
-                                    ) : (
-                                        <button
-                                            onClick={handleUpgradeClick}
-                                            className="w-full gradient-btn flex items-center justify-center gap-2"
-                                        >
-                                            Upgrade to Pro
-                                        </button>
-                                    )
-                                ) : (
-                                    <button disabled className="w-full gradient-btn-outline opacity-60 cursor-default">
-                                        {isPro ? 'Free Tier' : 'Current Plan'}
+                                {plan.name === 'Professional' ? (
+                                    <button
+                                        onClick={() => navigate('/pay-pro')}
+                                        className={`block text-center w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
+                                            plan.featured
+                                                ? 'bg-[#0D2A3E] dark:bg-[#C9A843] hover:bg-[#1B4F72] dark:hover:bg-[#D9B94E] text-white dark:text-[#0D2A3E] shadow-lg'
+                                                : 'border-2 border-[#0D2A3E] dark:border-[#C9A843]/50 text-[#0D2A3E] dark:text-[#C9A843] hover:bg-[#0D2A3E]/5 dark:hover:bg-[#C9A843]/10'
+                                        }`}
+                                    >
+                                        {plan.cta}
                                     </button>
+                                ) : (
+                                    <Link
+                                        to={plan.name === 'Enterprise' ? '/contact' : '/signup'}
+                                        className={`block text-center w-full py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
+                                            plan.featured
+                                                ? 'bg-[#0D2A3E] dark:bg-[#C9A843] hover:bg-[#1B4F72] dark:hover:bg-[#D9B94E] text-white dark:text-[#0D2A3E] shadow-lg'
+                                                : 'border-2 border-[#0D2A3E] dark:border-[#C9A843]/50 text-[#0D2A3E] dark:text-[#C9A843] hover:bg-[#0D2A3E]/5 dark:hover:bg-[#C9A843]/10'
+                                        }`}
+                                    >
+                                        {plan.cta}
+                                    </Link>
                                 )}
-                            </GlassCard>
-                        </motion.div>
-                    ))}
-                </div>
+                            </motion.div>
+                        ))}
+                    </div>
 
-                <motion.div
-                    className="mt-16 text-center"
-                    initial="hidden"
-                    animate="visible"
-                    variants={fadeUp}
-                    custom={4}
-                >
-                    <GlassCard className="max-w-2xl mx-auto">
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Questions?</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                            All plans include core AI analysis. Pro unlocks detailed reports, safer alternatives, PDF downloads, and unlimited usage. Cancel anytime — no hidden fees.
-                        </p>
-                    </GlassCard>
-                </motion.div>
-            </div>
-
-            {/* Mock Payment Modal */}
-            <AnimatePresence>
-                {showModal && (
+                    {/* Security Notice */}
                     <motion.div
-                        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        className="flex items-center justify-center gap-2 mt-10 text-sm text-gray-500 dark:text-gray-400"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeUp}
+                        custom={4}
                     >
-                        {/* Backdrop */}
-                        <div
-                            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-                            onClick={() => !paying && setShowModal(false)}
-                        />
-
-                        {/* Modal */}
-                        <motion.div
-                            className="relative w-full max-w-md"
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            transition={{ type: 'spring', duration: 0.4 }}
-                        >
-                            <GlassCard className="p-0 overflow-hidden">
-                                {/* Header */}
-                                <div className="bg-gradient-to-r from-primary-600 to-purple-600 p-6 text-white relative">
-                                    {!paying && (
-                                        <button
-                                            onClick={() => setShowModal(false)}
-                                            className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-white/20 transition-colors"
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    )}
-                                    <div className="flex items-center gap-3 mb-1">
-                                        <Zap className="w-6 h-6 text-amber-300" />
-                                        <h2 className="text-xl font-bold">Upgrade to ContractAI Pro</h2>
-                                    </div>
-                                    <p className="text-white/70 text-sm">Unlock the full power of AI contract analysis</p>
-                                </div>
-
-                                <div className="p-6">
-                                    {success ? (
-                                        <motion.div
-                                            className="text-center py-6"
-                                            initial={{ scale: 0.8, opacity: 0 }}
-                                            animate={{ scale: 1, opacity: 1 }}
-                                        >
-                                            <div className="text-5xl mb-4">🎉</div>
-                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                                                Payment Successful!
-                                            </h3>
-                                            <p className="text-gray-500 dark:text-gray-400">
-                                                You are now a Pro user! Redirecting to dashboard...
-                                            </p>
-                                        </motion.div>
-                                    ) : (
-                                        <>
-                                            {/* Price */}
-                                            <div className="flex items-baseline gap-1 mb-6">
-                                                <span className="text-4xl font-bold text-gray-900 dark:text-white">₹299</span>
-                                                <span className="text-gray-400">/month</span>
-                                            </div>
-
-                                            {/* Features */}
-                                            <ul className="space-y-3 mb-6">
-                                                {proFeatures.map((f, i) => (
-                                                    <li key={i} className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
-                                                        <span className="w-7 h-7 rounded-full bg-primary-500/10 flex items-center justify-center text-primary-500 flex-shrink-0">
-                                                            {f.icon}
-                                                        </span>
-                                                        {f.text}
-                                                    </li>
-                                                ))}
-                                            </ul>
-
-                                            {/* Confirm Button */}
-                                            <button
-                                                onClick={handleConfirmPayment}
-                                                disabled={paying}
-                                                className="w-full gradient-btn flex items-center justify-center gap-2 disabled:opacity-70"
-                                            >
-                                                {paying ? (
-                                                    <>
-                                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                        Processing...
-                                                    </>
-                                                ) : (
-                                                    'Confirm Payment (Demo)'
-                                                )}
-                                            </button>
-
-                                            <p className="text-center text-xs text-gray-400 mt-3">
-                                                🔒 This is a demo payment for testing purposes
-                                            </p>
-                                        </>
-                                    )}
-                                </div>
-                            </GlassCard>
-                        </motion.div>
+                        <Lock className="w-4 h-4" />
+                        All plans include SSL encryption and data privacy compliance.
                     </motion.div>
-                )}
-            </AnimatePresence>
+                </div>
+            </section>
+
+            {/* Bottom Section */}
+            <section className="py-24 px-4 bg-white dark:bg-[#0D2A3E]">
+                <div className="max-w-4xl mx-auto">
+                    <motion.div
+                        className="text-center mb-12"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={fadeUp}
+                        custom={0}
+                    >
+                        <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+                            Why architectural precision matters in <span className="text-[#C9A843]">legal AI</span>?
+                        </h2>
+                        <p className="text-gray-500 dark:text-gray-400 text-lg max-w-3xl mx-auto">
+                            SamvidAI isn&apos;t just a contract reader; it&apos;s a digital counsel designed for the high-stakes environment of legal review. We utilize proprietary LLMs tuned for case law accuracy and structural integrity.
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <motion.div
+                            className="bg-[#F4F6F9] dark:bg-[#0B2236] border border-gray-200 dark:border-white/10 rounded-2xl p-8 text-center"
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeUp}
+                            custom={1}
+                        >
+                            <Shield className="w-10 h-10 text-[#C9A843] mx-auto mb-4" />
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Security</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">ISO 27001 Certified environment with zero-knowledge encryption.</p>
+                        </motion.div>
+                        <motion.div
+                            className="bg-[#F4F6F9] dark:bg-[#0B2236] border border-gray-200 dark:border-white/10 rounded-2xl p-8 text-center"
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeUp}
+                            custom={2}
+                        >
+                            <BarChart3 className="w-10 h-10 text-[#C9A843] mx-auto mb-4" />
+                            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Accuracy</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">99.4% precision rate on standard commercial clauses.</p>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
         </div>
     )
 }

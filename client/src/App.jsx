@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import Navbar from './components/Navbar'
@@ -12,6 +12,10 @@ import Upload from './pages/Upload'
 import Results from './pages/Results'
 import Pricing from './pages/Pricing'
 import Profile from './pages/Profile'
+import TermsOfService from './pages/TermsOfService'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PayPro from './pages/PayPro'
+import NotFound from './pages/NotFound'
 
 export default function App() {
     return (
@@ -38,12 +42,23 @@ export default function App() {
                                 <Route path="/profile" element={
                                     <ProtectedRoute><Profile /></ProtectedRoute>
                                 } />
+                                <Route path="/terms" element={<TermsOfService />} />
+                                <Route path="/payment-success" element={<PaymentSuccess />} />
+                                <Route path="/pay-pro" element={<PayPro />} />
+                                <Route path="*" element={<NotFound />} />
                             </Routes>
                         </main>
-                        <Footer />
+                        <FooterWrapper />
                     </div>
                 </AuthProvider>
             </ThemeProvider>
         </BrowserRouter>
     )
+}
+
+function FooterWrapper() {
+    const location = useLocation()
+    const hideFooter = location.pathname === '/dashboard'
+    if (hideFooter) return null
+    return <Footer />
 }

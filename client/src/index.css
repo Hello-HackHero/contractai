@@ -1,3 +1,23 @@
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F4F6F9;
+  --bg-card: #FFFFFF;
+  --text-primary: #0D2A3E;
+  --text-secondary: #4B5563;
+  --border-color: #E5E7EB;
+  --accent: #C9A843;
+}
+
+.dark {
+  --bg-primary: #0D2A3E;
+  --bg-secondary: #091F2E;
+  --bg-card: #0B2236;
+  --text-primary: #FFFFFF;
+  --text-secondary: #9CA3AF;
+  --border-color: rgba(255,255,255,0.1);
+  --accent: #C9A843;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,7 +30,7 @@
   }
 
   body {
-    @apply bg-white text-gray-900 dark:bg-dark-bg dark:text-gray-100 font-sans transition-colors duration-300;
+    @apply bg-white text-gray-900 dark:bg-[#0D2A3E] dark:text-gray-100 font-sans transition-colors duration-300;
   }
 
   ::-webkit-scrollbar {
@@ -18,79 +38,48 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-gray-100 dark:bg-dark-bg;
+    @apply bg-gray-100 dark:bg-[#091F2E];
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 dark:bg-dark-border rounded-full;
+    @apply bg-gray-300 dark:bg-white/10 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-gray-600;
+    @apply bg-gray-400 dark:bg-white/20;
   }
 }
 
 @layer components {
   .glass-card {
-    @apply bg-white/70 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl shadow-xl;
+    @apply bg-white dark:bg-[#0B2236] border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm dark:shadow-none;
   }
 
   .glass-card-strong {
-    @apply bg-white/90 dark:bg-white/10 backdrop-blur-2xl border border-white/30 dark:border-white/15 rounded-2xl shadow-2xl;
-  }
-
-  .gradient-bg {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
-  }
-
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary-500 to-purple-500 bg-clip-text text-transparent;
+    @apply bg-white/95 dark:bg-[#0B2236] border border-gray-300 dark:border-white/20 rounded-2xl shadow-md dark:shadow-none;
   }
 
   .gradient-btn {
-    @apply bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg hover:shadow-primary-500/25 active:scale-95;
+    @apply bg-[#0D2A3E] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-95 shadow-lg;
+  }
+  
+  .gradient-btn-gold {
+    @apply bg-[#C9A843] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-95 shadow-lg;
   }
 
   .gradient-btn-outline {
-    @apply border-2 border-primary-500/50 text-primary-600 dark:text-primary-400 font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:bg-primary-500/10 hover:border-primary-500;
+    @apply border-2 border-[#C9A843] text-[#C9A843] font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:bg-[#C9A843]/10;
   }
 
   .input-field {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-card text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all duration-200;
-  }
-
-  .tab-btn {
-    @apply px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200;
-  }
-
-  .tab-btn-active {
-    @apply bg-primary-600 text-white shadow-lg shadow-primary-500/25;
-  }
-
-  .tab-btn-inactive {
-    @apply text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5;
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0B2236] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#C9A843]/50 transition-all duration-200;
   }
 
   .page-container {
-    @apply min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8;
+    @apply min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-[#0D2A3E];
   }
 
   .section-container {
     @apply max-w-7xl mx-auto;
-  }
-}
-
-@layer utilities {
-  .animate-delay-100 {
-    animation-delay: 100ms;
-  }
-  .animate-delay-200 {
-    animation-delay: 200ms;
-  }
-  .animate-delay-300 {
-    animation-delay: 300ms;
-  }
-  .animate-delay-400 {
-    animation-delay: 400ms;
   }
 }

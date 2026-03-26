@@ -98,3 +98,35 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
 -- Go to Supabase Dashboard > Storage > New Bucket
 -- Name: "contracts"
 -- Set as public (or configure appropriate policies)
+
+-- ============================================
+-- 4. Contract Chats table (Manual Add)
+-- ============================================
+CREATE TABLE IF NOT EXISTS contract_chats (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  contract_id UUID REFERENCES contracts(id) ON DELETE CASCADE,
+  user_message TEXT NOT NULL,
+  ai_response TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for chat
+ALTER TABLE contract_chats ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own contract chats"
+  ON contract_chats FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM contracts 
+      WHERE contracts.id = contract_chats.contract_id 
+      AND contracts.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can insert own contract chats"
+  ON contract_chats FOR INSERT WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM contracts 
+      WHERE contracts.id = contract_chats.contract_id 
+      AND contracts.user_id = auth.uid()
+    )
+  );

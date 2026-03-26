@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
-import { Menu, X, Sun, Moon, FileText, LogOut, User } from 'lucide-react'
+import { Menu, X, Sun, Moon, LogOut, User } from 'lucide-react'
+import SamvidIcon from './SamvidIcon'
 
 export default function Navbar() {
     const { user, profile, signOut } = useAuth()
@@ -22,19 +23,23 @@ export default function Navbar() {
             { to: '/pricing', label: 'Pricing' },
         ]
         : [
+            { to: '/#how-it-works', label: 'How It Works' },
+            { to: '/#features', label: 'Features' },
+            { to: '/#contact', label: 'Contact' },
             { to: '/pricing', label: 'Pricing' },
         ]
 
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-dark-bg/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-white/10">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-[#0D2A3E]/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center space-x-2 group">
-                        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-600 to-purple-600 flex items-center justify-center shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-shadow">
-                            <FileText className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-xl font-bold gradient-text">ContractAI</span>
+                    <Link to="/" className="flex items-center">
+                        <img 
+                            src={darkMode ? "/samvid-icon-dark.png" : "/samvid-icon-light.png"}
+                            alt="SamvidAI"
+                            className="h-10 w-auto object-contain"
+                        />
                     </Link>
 
                     {/* Desktop Nav */}
@@ -106,7 +111,7 @@ export default function Navbar() {
 
             {/* Mobile Menu */}
             {mobileOpen && (
-                <div className="md:hidden bg-white/95 dark:bg-dark-bg/95 backdrop-blur-xl border-t border-gray-200/50 dark:border-white/10 animate-fade-in">
+                <div className="md:hidden bg-white/95 dark:bg-[#0D2A3E]/95 backdrop-blur-xl border-t border-gray-200 dark:border-white/10 animate-fade-in">
                     <div className="px-4 py-4 space-y-2">
                         {navLinks.map(link => (
                             <Link

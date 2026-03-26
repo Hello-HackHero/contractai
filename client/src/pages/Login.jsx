@@ -45,21 +45,19 @@ export default function Login() {
     return (
         <div className="page-container flex items-center justify-center min-h-screen">
             {/* Background */}
-            <div className="fixed inset-0 bg-gradient-to-br from-primary-50 via-white to-purple-50 dark:from-dark-bg dark:via-dark-bg dark:to-purple-950/20 -z-10" />
-            <div className="fixed top-1/3 left-1/4 w-72 h-72 bg-primary-500/10 rounded-full blur-3xl -z-10" />
-            <div className="fixed bottom-1/3 right-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -z-10" />
+            <div className="fixed inset-0 bg-[#F4F6F9] dark:bg-[#0D2A3E] -z-10" />
 
             <div className="w-full max-w-md animate-fade-in">
                 <GlassCard className="p-8">
                     <div className="text-center mb-8">
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back</h1>
-                        <p className="text-gray-500 dark:text-gray-400">Sign in to continue to ContractAI</p>
+                        <p className="text-gray-500 dark:text-gray-400">Sign in to continue to SamvidAI</p>
                     </div>
 
                     {magicLinkSent ? (
                         <div className="text-center py-8">
-                            <div className="w-16 h-16 rounded-full bg-success-500/10 flex items-center justify-center mx-auto mb-4">
-                                <Mail className="w-8 h-8 text-success-500" />
+                            <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
+                                <Mail className="w-8 h-8 text-emerald-500" />
                             </div>
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Check your email!</h3>
                             <p className="text-gray-500 dark:text-gray-400 text-sm">
@@ -145,7 +143,7 @@ export default function Login() {
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                             Don't have an account?{' '}
-                            <Link to="/signup" className="text-primary-600 dark:text-primary-400 font-medium hover:underline">
+                            <Link to="/signup" className="text-[#C9A843] font-medium hover:underline">
                                 Sign up
                             </Link>
                         </p>

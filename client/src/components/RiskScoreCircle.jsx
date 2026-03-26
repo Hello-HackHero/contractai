@@ -13,9 +13,9 @@ export default function RiskScoreCircle({ score = 0, size = 140, strokeWidth = 1
     const offset = circumference - (animatedScore / 100) * circumference
 
     const getColor = (score) => {
-        if (score < 40) return { stroke: '#10B981', bg: 'rgba(16, 185, 129, 0.1)', label: 'Low Risk', textColor: 'text-success-500' }
+        if (score < 40) return { stroke: '#22C55E', bg: 'rgba(34, 197, 94, 0.1)', label: 'Low Risk', textColor: 'text-green-500' }
         if (score < 70) return { stroke: '#F59E0B', bg: 'rgba(245, 158, 11, 0.1)', label: 'Medium Risk', textColor: 'text-yellow-500' }
-        return { stroke: '#EF4444', bg: 'rgba(239, 68, 68, 0.1)', label: 'High Risk', textColor: 'text-danger-500' }
+        return { stroke: '#EF4444', bg: 'rgba(239, 68, 68, 0.1)', label: 'High Risk', textColor: 'text-red-500' }
     }
 
     const colorInfo = getColor(animatedScore)
