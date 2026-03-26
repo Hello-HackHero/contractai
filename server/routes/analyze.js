@@ -3,6 +3,7 @@ import Groq from 'groq-sdk'
 import pdfParse from 'pdf-parse'
 import mammoth from 'mammoth'
 import { verifyAuth } from '../middleware/auth.js'
+import { analyzeWithHF } from '../services/hfService.js'
 
 const router = Router()
 
@@ -195,82 +196,80 @@ router.post('/analyze', verifyAuth, async (req, res) => {
 
         // ── Chunking & analysis ─────────────────────────────────────────
 
-        const wordCount = text.split(' ').length
-        let chunkResults = []
+        // ── PART 6: Dual-Model Analysis (HF Primary, Groq Fallback) ─────
+        let analysisData = null
+        let modelUsed = "HuggingFace"
 
-        if (wordCount <= 3000) {
-            // Short contract — analyse directly (no chunking)
-            console.log(`Contract has ${wordCount} words — analysing directly (no chunking)`)
-            const messages = [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: `Analyse this contract text:\n\n${text}` }
-            ]
-            const result = await callGroq(messages)
-            if (result) {
-                chunkResults.push(JSON.parse(result))
+        console.log("Trying HuggingFace model...")
+        const hfResult = await analyzeWithHF(text)
+
+        if (hfResult) {
+            console.log("HuggingFace analysis successful ✅")
+            analysisData = {
+                overall_risk_score: hfResult.riskScore,
+                risk_level: hfResult.riskLevel,
+                contract_type: "Contract", // HF doesn't always return this, defaulting
+                summary: hfResult.summary,
+                clauses: {
+                    high_risk: hfResult.redFlags.map(flag => ({ title: "Risk", text: flag, type: "high_risk", severity: 8, explanation: flag, recommendation: "Review carefully" })),
+                    medium_risk: [],
+                    low_risk: hfResult.keyClauses.map(clause => ({ title: "Clause", text: clause, type: "low_risk", severity: 2, explanation: "Key provision identified", recommendation: "Standard clause" })),
+                },
+                red_flags: hfResult.redFlags,
+                recommendations: hfResult.redFlags.map(f => `Mitigate: ${f}`),
+                total_clauses_analysed: hfResult.keyClauses.length + hfResult.redFlags.length,
+                model_used: "HuggingFace"
             }
         } else {
-            // Long contract — split into chunks and analyse sequentially
-            const chunks = chunkText(text)
-            console.log(`Contract has ${wordCount} words — split into ${chunks.length} chunks`)
+            console.log("HF failed or returned null, falling back to Groq...")
+            modelUsed = "Groq"
+            
+            // Existing Groq logic (Chunking if needed)
+            const wordCount = text.split(' ').length
+            let chunkResults = []
 
-            for (let i = 0; i < chunks.length; i++) {
-                try {
-                    console.log(`Processing chunk ${i+1} of ${chunks.length}...`)
-                    const messages = [
-                        { role: 'system', content: systemPrompt },
-                        { role: 'user', content: `Analyse this contract section:\n\n${chunks[i]}` }
-                    ]
-                    const result = await callGroq(messages)
-                    const parsed = JSON.parse(result)
-                    chunkResults.push(parsed)
-                    console.log(`✅ Chunk ${i+1} done`)
-                    // Wait 1 second between chunks to avoid rate limits
-                    if (i < chunks.length - 1) {
-                        await new Promise(r => setTimeout(r, 1000))
-                    }
-                } catch (err) {
-                    console.log(`⚠️ Chunk ${i+1} failed, skipping:`, err.message)
-                    continue
+            if (wordCount <= 3000) {
+                const messages = [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: `Analyse this contract text:\n\n${text}` }
+                ]
+                const result = await callGroq(messages)
+                if (result) chunkResults.push(JSON.parse(result))
+            } else {
+                const chunks = chunkText(text)
+                for (let i = 0; i < chunks.length; i++) {
+                    try {
+                        const result = await callGroq([{ role: 'system', content: systemPrompt }, { role: 'user', content: `Analyse this contract section:\n\n${chunks[i]}` }])
+                        if (result) chunkResults.push(JSON.parse(result))
+                    } catch (err) { continue }
                 }
+            }
+
+            if (chunkResults.length === 0) {
+                return res.status(500).json({ error: 'AI analysis failed for both HF and Groq. Please try again.' })
+            }
+
+            const { allClauses, uniqueRedFlags, summary, contractType } = mergeChunkResults(chunkResults)
+            const score = calculateRiskScore(allClauses)
+
+            analysisData = {
+                overall_risk_score: score,
+                risk_level: score >= 70 ? 'HIGH' : score >= 40 ? 'MEDIUM' : 'LOW',
+                contract_type: contractType,
+                summary: summary,
+                clauses: {
+                    high_risk: allClauses.filter((c) => c.type === 'high_risk'),
+                    medium_risk: allClauses.filter((c) => c.type === 'medium_risk'),
+                    low_risk: allClauses.filter((c) => c.type === 'low_risk'),
+                },
+                red_flags: uniqueRedFlags,
+                recommendations: allClauses.filter((c) => c.type === 'high_risk').map((c) => c.recommendation).filter(Boolean).slice(0, 5),
+                total_clauses_analysed: allClauses.length,
+                model_used: "Groq"
             }
         }
 
-        // If all chunks failed, return error
-        if (chunkResults.length === 0) {
-            return res.status(500).json({
-                error: 'AI analysis failed for all sections. Please try again.',
-            })
-        }
-
-        // ── Merge results & calculate risk score ────────────────────────
-
-        const { allClauses, uniqueRedFlags, summary, contractType } =
-            mergeChunkResults(chunkResults)
-
-        const score = calculateRiskScore(allClauses)
-
-        // ── Build response ──────────────────────────────────────────────
-
-        const analysisData = {
-            overall_risk_score: score,
-            risk_level: score >= 70 ? 'HIGH' : score >= 40 ? 'MEDIUM' : 'LOW',
-            contract_type: contractType,
-            summary: summary,
-            clauses: {
-                high_risk: allClauses.filter((c) => c.type === 'high_risk'),
-                medium_risk: allClauses.filter((c) => c.type === 'medium_risk'),
-                low_risk: allClauses.filter((c) => c.type === 'low_risk'),
-            },
-            red_flags: uniqueRedFlags,
-            recommendations: allClauses
-                .filter((c) => c.type === 'high_risk')
-                .map((c) => c.recommendation)
-                .filter(Boolean)
-                .slice(0, 5),
-            total_clauses_analysed: allClauses.length,
-            chunks_processed: chunkResults.length,
-        }
+        // ── PART 7: Build response ──────────────────────────────────────
 
         // ── Save to database ────────────────────────────────────────────
 
@@ -280,7 +279,7 @@ router.post('/analyze', verifyAuth, async (req, res) => {
                 user_id: userId,
                 file_name: fileName,
                 file_url: fileUrl,
-                risk_score: score,
+                risk_score: analysisData.overall_risk_score,
                 analysis_result: analysisData,
             })
             .select()

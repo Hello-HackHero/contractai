@@ -9,5 +9,8 @@
     },
     "devDependencies": {
         "concurrently": "^8.2.2"
+    },
+    "dependencies": {
+        "@huggingface/inference": "^4.13.15"
     }
 }

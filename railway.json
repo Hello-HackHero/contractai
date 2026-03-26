@@ -5,6 +5,10 @@
   },
   "deploy": {
     "startCommand": "npm start",
-    "restartPolicyType": "ON_FAILURE"
+    "restartPolicyType": "ON_FAILURE",
+    "healthcheckPath": "/api/health",
+    "environment": {
+      "note": "Ensure HF_TOKEN and HF_MODEL are set for analysis"
+    }
   }
 }
