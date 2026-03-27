@@ -29,7 +29,13 @@ app.use('/api', chatRouter)
 
 // Health check
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() })
+    res.json({ 
+        status: 'ok',
+        groq: !!process.env.GROQ_API_KEY,
+        hf: !!process.env.HF_TOKEN,
+        supabase: !!process.env.SUPABASE_SERVICE_ROLE_KEY || !!process.env.SUPABASE_SERVICE_KEY,
+        timestamp: new Date().toISOString()
+    })
 })
 
 // Production static serving

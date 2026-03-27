@@ -101,23 +101,19 @@ export default function Upload() {
             setUploading(false)
             setAnalyzing(true)
 
-            // Step 3: Send extracted text + metadata to backend for AI analysis
+            // Step 3: Send file to backend for AI analysis
             const session = await supabase.auth.getSession()
             const token = session.data.session?.access_token
+
+            const formData = new FormData()
+            formData.append('contract', file)
 
             const response = await fetch('/api/analyze', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
-                body: JSON.stringify({
-                    extractedText,          // text extracted locally (or base64 for PDF)
-                    fileName: file.name,
-                    filePath: fileName,
-                    fileUrl: urlData.publicUrl,
-                    isPdfBase64: ext === 'pdf', // flag so server knows to decode
-                }),
+                body: formData
             })
 
             if (!response.ok) {

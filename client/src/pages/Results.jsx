@@ -259,6 +259,22 @@ export default function Results() {
                 </div>
             </div>
 
+            {/* ── MODEL USED BADGE ── */}
+            {data.modelUsed && (
+                <p className="text-center text-gray-600 dark:text-gray-500 text-xs mt-8">
+                    ⚡ Analysed by: 
+                    <span className={`ml-1 font-bold ${
+                        data.modelUsed === 'HuggingFace' 
+                            ? 'text-[#C9A843]' 
+                            : 'text-blue-400'
+                    }`}>
+                        {data.modelUsed === 'HuggingFace' 
+                            ? '🤗 SamvidAI Custom Model' 
+                            : '⚡ Groq Fallback'}
+                    </span>
+                </p>
+            )}
+
             {/* ── CHAT SECTION ── */}
             <ChatSection contractId={id} contractData={data} />
         </div>
